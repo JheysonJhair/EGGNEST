@@ -7,7 +7,11 @@ import VentilacionIcon from "../common/Agua";
 import * as Animatable from "react-native-animatable";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({ route, navigation }) => {
+  const { userData } = route.params;
+  const fechaInicio = userData.Huevos[0].FechaInicio;
+  const fechaFormateada = new Date(fechaInicio).toLocaleDateString();
+
   const [velocidades, setVelocidades] = useState(["alta", "alta", "alta"]);
   const [humedades, setHumedades] = useState([10, 10, 10]);
   const [temperaturas, setTemperaturas] = useState([15, 15, 15]);
@@ -67,7 +71,7 @@ const MainScreen = ({ navigation }) => {
       </View>
 
       <Text style={styles.text1}>
-        <Text style={styles.textColor}>Hola </Text>Jhair, Bienvenido
+        <Text style={styles.textColor}>Hola </Text>{userData.user.Nombre}, Bienvenido
       </Text>
 
       <View style={styles.logoAndInfoContainer}>
@@ -78,14 +82,14 @@ const MainScreen = ({ navigation }) => {
           />
         </View>
         <View style={styles.infoContainerImage}>
-          <Text style={styles.text2}>TIPO: Gallina</Text>
+          <Text style={styles.text2}>TIPO: {userData.Huevos[0].Tipo}</Text>
           <View style={styles.containerMap}>
             <FontAwesome name="map-marker" size={20} color="#8d4925" />
             <Text style={styles.text4}>Bella vista baja</Text>
           </View>
           <View style={styles.containerMap}>
             <FontAwesome name="circle" size={13} color="#48c26c" />
-            <Text style={styles.text5}>Tu ave favorita en proceso!</Text>
+            <Text style={styles.text0}>Tu ave favorita en proceso!</Text>
           </View>
         </View>
       </View>
@@ -93,11 +97,11 @@ const MainScreen = ({ navigation }) => {
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
           <Text style={styles.text5}>Tiempo</Text>
-          <Text style={styles.text6}>20 días</Text>
+          <Text style={styles.text6}>{userData.Huevos[0].CantidadDias} días</Text>
         </View>
         <View style={styles.infoItem3}>
           <Text style={styles.text5}>Fecha inicio</Text>
-          <Text style={styles.text6}>12/12/12</Text>
+          <Text style={styles.text6}>{fechaFormateada}</Text>
         </View>
         <View style={styles.infoItem2}>
           <Text style={styles.text5}>Fecha fin</Text>
@@ -291,6 +295,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#565557",
+  },
+  text0: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#565557",
+    marginLeft:10
   },
   text6: {
     fontSize: 14,
