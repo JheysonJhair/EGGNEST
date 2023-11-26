@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 
@@ -11,11 +11,11 @@ const HumedadIcon = ({ humedades }) => {
     const ultimaHumedad = humedades[humedades.length - 1];
 
     if (ultimaHumedad < 30) {
-      setColor('yellow');
+      setColor('#30afff');
     } else if (ultimaHumedad > 70) {
-      setColor('red');
+      setColor('#000be5')
     } else {
-      setColor('blue');
+      setColor('#0f6bdb');
     }
 
     if (viewRef.current) {
@@ -26,9 +26,9 @@ const HumedadIcon = ({ humedades }) => {
   return (
     <Animatable.View
       ref={viewRef}
-      style={{ alignItems: 'center', justifyContent: 'center' }}
+      style={{ alignItems: 'center', justifyContent: 'center', marginLeft:10, marginRight:10 }}
     >
-      <FontAwesome name="tint" size={30} color={color} />
+      <FontAwesome name="tint" size={40} color={color} />
       <Text style={{ color }}>{humedades[humedades.length - 1]}%</Text>
     </Animatable.View>
   );

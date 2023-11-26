@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 
@@ -26,9 +26,9 @@ const TemperaturaIcon = ({ temperaturas }) => {
   return (
     <Animatable.View
       ref={viewRef}
-      style={{ alignItems: 'center', justifyContent: 'center' }}
+      style={{ alignItems: 'center', justifyContent: 'center', marginLeft:10, marginRight:10 }}
     >
-      <FontAwesome name="thermometer" size={30} color={color} />
+      <FontAwesome name="thermometer" size={40} color={color} />
       <Text style={{ color }}>{temperaturas[temperaturas.length - 1]}°C</Text>
     </Animatable.View>
   );
