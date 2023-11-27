@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,21 +8,39 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  CheckBox,
 } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
 
 const Admin = () => {
   const [cantidadHuevos, setCantidadHuevos] = useState("");
   const [usuario, setUsuario] = useState("");
-  const [fechaInicio, setFechaInicio] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [email, setEmail] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+
+  useEffect(() => {
+    setFechaInicio(getCurrentDate());
+  }, []);
 
   const handleFormSubmit = () => {
-    console.log("Cantidad de Huevos:", cantidadHuevos);
-    console.log("Usuario:", usuario);
-    console.log("Fecha de Inicio:", fechaInicio);
-    console.log("Contraseña:", contrasena);
-    console.log("Email:", email);
+    if ( cantidadHuevos && usuario && contrasena && email) {
+      console.log("Cantidad de Huevos:", cantidadHuevos);
+      console.log("Usuario:", usuario);
+      console.log("Fecha de Inicio:", fechaInicio);
+      console.log("Contraseña:", contrasena);
+      console.log("Email:", email);
+    } else {
+      alert("Por favor, complete todos los campos y confirme la incubación.");
+    }
+  };
+
+  const getCurrentDate = () => {
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+    return formattedDate;
   };
 
   return (
@@ -38,7 +56,6 @@ const Admin = () => {
       <Text style={styles.title}>Registrar</Text>
 
       <View style={styles.formContainer}>
-
         <TextInput
           style={styles.input}
           placeholder="Usuario"
@@ -62,13 +79,6 @@ const Admin = () => {
           autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
         />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Fecha de Inicio"
-          value={fechaInicio}
-          onChangeText={(text) => setFechaInicio(text)}
-        />
 
         <TextInput
           style={styles.input}
@@ -77,6 +87,14 @@ const Admin = () => {
           keyboardType="numeric"
           onChangeText={(text) => setCantidadHuevos(text)}
         />
+
+        <View style={styles.checkboxContainer}>
+          <AntDesign name="checkcircle" size={19} color="#ff9800" />
+          <Text style={styles.checkboxText}>
+            Iniciar incubación ahora <Text  style={styles.checkboxText2}>{fechaInicio}</Text>
+          </Text>
+        </View>
+
         <TouchableOpacity style={styles.button} onPress={handleFormSubmit}>
           <Text style={styles.buttonText}>Enviar Datos</Text>
         </TouchableOpacity>
@@ -126,6 +144,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  checkboxText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  checkboxText2: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  checkboxText2: {
+    color: "#ff9800",
+    fontSize: 16,
+    fontWeight: "bold"
   },
 });
 
