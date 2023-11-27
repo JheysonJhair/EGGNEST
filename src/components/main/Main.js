@@ -1,23 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import TemperaturaIcon from "../common/TemperaturaIcon";
 import HumedadIcon from "../common/HumedadIcon";
-import VentilacionIcon from "../common/Agua";
+import AguaIcon from "../common/Agua";
 import * as Animatable from "react-native-animatable";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { getUserData } from '../../services/apiGetTemperaturaHumedad'; 
 
 const MainScreen = ({ route, navigation }) => {
   const { userData } = route.params;
   const fechaInicio = userData.Huevos[0].FechaInicio;
   const fechaFormateada = new Date(fechaInicio).toLocaleDateString();
-
-  const [velocidades, setVelocidades] = useState(["alta", "alta", "alta"]);
-  const [humedades, setHumedades] = useState([10, 10, 10]);
-  const [temperaturas, setTemperaturas] = useState([15, 15, 15]);
-
+  const [temperatura, setTemperatura] = useState(null);
+  const [humedad, setHumedad] = useState(null);
   const [focoEncendido, setFocoEncendido] = useState(false);
   const [ventiladorEncendido, setVentiladorEncendido] = useState(false);
+  const [actualizarDatos, setActualizarDatos] = useState(true); 
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await getUserData();
+        setTemperatura(data.valorTemperatura);
+        setHumedad(data.valorHumedad);
+        console.log("Petición 1: "+data.valorHumedad);
+        console.log("Petición 2: "+data.valorTemperatura);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+  
+    fetchUserData(); 
+  
+    const intervalId = setInterval(() => {
+      fetchUserData();
+      setActualizarDatos((prev) => !prev); // Cambiar el estado para forzar la ejecución del useEffect
+    }, 10000);
+  
+    return () => clearInterval(intervalId); 
+  }, [actualizarDatos]); 
 
   const handleLogout = () => {
     navigation.navigate("Login");
@@ -25,20 +48,6 @@ const MainScreen = ({ route, navigation }) => {
 
   const handleVerDetalles = () => {
     navigation.navigate("Report");
-  };
-
-  const handleNuevaVelocidad = (nuevaVelocidad) => {
-    setVelocidades((prevVelocidades) => [...prevVelocidades, nuevaVelocidad]);
-  };
-
-  const handleNuevaHumedad = (nuevaHumedad) => {
-    setHumedades((prevHumedades) => [...prevHumedades, nuevaHumedad]);
-  };
-  const handleNuevaTemperatura = (nuevaTemperatura) => {
-    setTemperaturas((prevTemperaturas) => [
-      ...prevTemperaturas,
-      nuevaTemperatura,
-    ]);
   };
 
   const prenderFoco = () => {
@@ -71,7 +80,8 @@ const MainScreen = ({ route, navigation }) => {
       </View>
 
       <Text style={styles.text1}>
-        <Text style={styles.textColor}>Hola </Text>{userData.user.Nombre}, Bienvenido
+        <Text style={styles.textColor}>Hola </Text>
+        {userData.user.Nombre}, Bienvenido
       </Text>
 
       <View style={styles.logoAndInfoContainer}>
@@ -97,7 +107,9 @@ const MainScreen = ({ route, navigation }) => {
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
           <Text style={styles.text5}>Tiempo</Text>
-          <Text style={styles.text6}>{userData.Huevos[0].CantidadDias} días</Text>
+          <Text style={styles.text6}>
+            {userData.Huevos[0].CantidadDias} días
+          </Text>
         </View>
         <View style={styles.infoItem3}>
           <Text style={styles.text5}>Fecha inicio</Text>
@@ -114,9 +126,9 @@ const MainScreen = ({ route, navigation }) => {
       <View style={styles.containerTemperatura}>
         <View style={styles.leftContainer}>
           <View style={styles.leftInnerContainer}>
-            <VentilacionIcon velocidades={velocidades} />
-            <TemperaturaIcon temperaturas={temperaturas} />
-            <HumedadIcon humedades={humedades} />
+            <AguaIcon velocidad="media" />
+            <TemperaturaIcon temperatura={temperatura} />
+            <HumedadIcon humedad={humedad} />
           </View>
         </View>
 
@@ -179,7 +191,7 @@ const MainScreen = ({ route, navigation }) => {
                   name="power-off"
                   size={26}
                   marginRight={3}
-                  color={focoEncendido ? "#009846" : "gray"}
+                  color={focoEncendido ? "#009846" : "#565557"}
                 />
               </TouchableOpacity>
 
@@ -188,13 +200,14 @@ const MainScreen = ({ route, navigation }) => {
                   name="power-off"
                   size={26}
                   marginLeft={3}
-                  color={!focoEncendido ? "#DB4437" : "gray"}
+                  color={!focoEncendido ? "#DB4437" : "#565557"}
                 />
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
+
       <TouchableOpacity style={styles.button} onPress={handleVerDetalles}>
         <Text style={styles.buttonText}>Ver detalles</Text>
       </TouchableOpacity>
@@ -253,7 +266,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: "row",
     width: "100%",
-    height: 60,
+    height: 50,
   },
   infoItem: {
     width: "33%",
@@ -300,7 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#565557",
-    marginLeft:10
+    marginLeft: 10,
   },
   text6: {
     fontSize: 14,

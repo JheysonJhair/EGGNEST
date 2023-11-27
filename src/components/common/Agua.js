@@ -1,21 +1,18 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import * as Animatable from 'react-native-animatable';
 
-const AguaIcon = ({ velocidades }) => {
+const AguaIcon = ({ velocidad }) => {
   const viewRef = useRef(null);
   const [color, setColor] = useState('gray');
 
   useEffect(() => {
-    const ultimaVelocidad = velocidades[velocidades.length - 1];
-
-    if (ultimaVelocidad === 'baja') {
+    if (velocidad === 'baja') {
       setColor('#09b2f4');
-    } else if (ultimaVelocidad === 'media') {
+    } else if (velocidad === 'media') {
       setColor('#0958f4');
-    } else if (ultimaVelocidad === 'alta') {
+    } else if (velocidad === 'alta') {
       setColor('#0132b7');
     } else {
       setColor('gray');
@@ -24,15 +21,15 @@ const AguaIcon = ({ velocidades }) => {
     if (viewRef.current) {
       viewRef.current.pulse(800);
     }
-  }, [velocidades]);
+  }, [velocidad]);
 
   return (
     <Animatable.View
       ref={viewRef}
-      style={{ alignItems: 'center', justifyContent: 'center', marginLeft:10, marginRight:10 }}
+      style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 10 }}
     >
       <MaterialCommunityIcons name="barrel" size={40} color={color} />
-      <Text style={{ color }}>{velocidades[velocidades.length - 1]}</Text>
+      <Text style={{ color }}>{velocidad}</Text>
     </Animatable.View>
   );
 };
