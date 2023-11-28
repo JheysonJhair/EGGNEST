@@ -6,18 +6,32 @@ import HumedadIcon from "../common/HumedadIcon";
 import AguaIcon from "../common/Agua";
 import * as Animatable from "react-native-animatable";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { getUserData } from '../../services/apiGetTemperaturaHumedad'; 
+import { getUserData } from "../../services/apiGetTemperaturaHumedad";
+
+import { updateVentilador } from "../../services/apiControlesVentilador";
+import { updateFoco } from "../../services/apiControlesFoco";
+import { getIncubatorDataById } from "../../services/apiGetIncuvadora";
 
 const MainScreen = ({ route, navigation }) => {
   const { userData } = route.params;
   const fechaInicio = userData.Huevos[0].FechaInicio;
   const fechaFormateada = new Date(fechaInicio).toLocaleDateString();
+
   const [temperatura, setTemperatura] = useState(null);
   const [humedad, setHumedad] = useState(null);
+  const [incubadora, setIncubadora] = useState(null);
+
   const [focoEncendido, setFocoEncendido] = useState(false);
   const [ventiladorEncendido, setVentiladorEncendido] = useState(false);
-  const [actualizarDatos, setActualizarDatos] = useState(true); 
+  const [actualizarDatos, setActualizarDatos] = useState(true);
   const [error, setError] = useState(null);
+
+  const fechaInicioObj = new Date(fechaInicio);
+  const fechaActualObj = new Date();
+  const diferenciaDias = Math.floor(
+    (fechaActualObj - fechaInicioObj) / (1000 * 60 * 60 * 24)
+  );
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -25,45 +39,67 @@ const MainScreen = ({ route, navigation }) => {
         const data = await getUserData();
         setTemperatura(data.valorTemperatura);
         setHumedad(data.valorHumedad);
-        console.log("Petición 1: "+data.valorHumedad);
-        console.log("Petición 2: "+data.valorTemperatura);
       } catch (error) {
         setError(error.message);
       }
     };
   
-    fetchUserData(); 
+    const fetchUseIncubadora = async () => {
+      try {
+        const data = await getIncubatorDataById(userData.user.IdUser);
+        const focoEncendido = data.foco === "0";
+        const ventiladorEncendido = data.foco === "0";
+        setVentiladorEncendido(ventiladorEncendido);
+        setFocoEncendido(focoEncendido);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
   
     const intervalId = setInterval(() => {
       fetchUserData();
-      setActualizarDatos((prev) => !prev); // Cambiar el estado para forzar la ejecución del useEffect
+      fetchUseIncubadora();
+      setActualizarDatos((prev) => !prev);
     }, 10000);
   
-    return () => clearInterval(intervalId); 
-  }, [actualizarDatos]); 
-
-  const handleLogout = () => {
-    navigation.navigate("Login");
-  };
+    return () => clearInterval(intervalId);
+  }, [actualizarDatos, userData.user.IdUser]);
 
   const handleVerDetalles = () => {
     navigation.navigate("Report");
   };
 
+
   const prenderFoco = () => {
     setFocoEncendido(true);
+    updateFoco("0", 1)
+      .then(() => console.log("Foco encendido actualizado en la API"))
+      .catch((error) =>
+        console.error("Error al actualizar foco encendido:", error)
+      );
   };
 
   const apagarFoco = () => {
     setFocoEncendido(false);
+    updateFoco("1", 1)
+      .then(() => console.log("Foco apagado actualizado en la API"))
+      .catch((error) =>
+        console.error("Error al actualizar foco apagado:", error)
+      );
   };
 
   const encenderVentilador = () => {
     setVentiladorEncendido(true);
+    updateVentilador("0", 1)
+      .then(() => console.log("Ventilador encendido actualizado en la API"))
+      .catch((error) => console.error("Error al actualizar ventilador encendido:", error));
   };
 
   const apagarVentilador = () => {
     setVentiladorEncendido(false);
+    updateVentilador("1", 1)
+      .then(() => console.log("Ventilador apagado actualizado en la API"))
+      .catch((error) => console.error("Error al actualizar ventilador apagado:", error));
   };
 
   return (
@@ -98,8 +134,26 @@ const MainScreen = ({ route, navigation }) => {
             <Text style={styles.text4}>Bella vista baja</Text>
           </View>
           <View style={styles.containerMap}>
-            <FontAwesome name="circle" size={13} color="#48c26c" />
-            <Text style={styles.text0}>Tu ave favorita en proceso!</Text>
+            {diferenciaDias >= 1 && diferenciaDias <= 12 && (
+              <>
+                <FontAwesome name="circle" size={13} color="#48c26c" />
+                <Text style={styles.text0}>Tu ave favorita en linea!</Text>
+              </>
+            )}
+            {diferenciaDias >= 13 && diferenciaDias <= 19 && (
+              <>
+                <FontAwesome name="circle" size={13} color="#e7ed36" />
+                <Text style={styles.text0}>Tu ave favorita en proceso!</Text>
+              </>
+            )}
+            {diferenciaDias >= 20 && diferenciaDias <= 50 && (
+              <>
+                <FontAwesome name="circle" size={13} color="#ed3d3d" />
+                <Text style={styles.text0}>
+                  Tu ave favorita está a punto de nacer!!
+                </Text>
+              </>
+            )}
           </View>
         </View>
       </View>
@@ -107,9 +161,7 @@ const MainScreen = ({ route, navigation }) => {
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
           <Text style={styles.text5}>Tiempo</Text>
-          <Text style={styles.text6}>
-            {userData.Huevos[0].CantidadDias} días
-          </Text>
+          <Text style={styles.text6}>{diferenciaDias} días</Text>
         </View>
         <View style={styles.infoItem3}>
           <Text style={styles.text5}>Fecha inicio</Text>
@@ -117,7 +169,18 @@ const MainScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.infoItem2}>
           <Text style={styles.text5}>Fecha fin</Text>
-          <Text style={styles.text6}>En proceso</Text>
+          {diferenciaDias >= 1 && diferenciaDias <= 7 && (
+            <Text style={styles.text6}>1ra semana</Text>
+          )}
+          {diferenciaDias >= 8 && diferenciaDias <= 14 && (
+            <Text style={styles.text6}>2da semana</Text>
+          )}
+          {diferenciaDias >= 15 && diferenciaDias <= 20 && (
+            <Text style={styles.text6}>3ra semana</Text>
+          )}
+          {diferenciaDias >= 21 && diferenciaDias <= 50 && (
+            <Text style={styles.text6}>Finalizando</Text>
+          )}
         </View>
       </View>
 
@@ -230,7 +293,6 @@ const MainScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: "10%",
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f0",
@@ -339,7 +401,7 @@ const styles = StyleSheet.create({
   ////////////////////////////
   gif: {
     width: "100%",
-    height: 195,
+    height: 220,
   },
   containerGif: {
     flex: 1,

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "EGGNEST",
+    "slug": "EGGNEST",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "",
+        "backgroundColor": "#000000"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/images/logo.png"
     }
   }
 }

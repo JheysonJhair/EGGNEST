@@ -1,6 +1,6 @@
-export const getUserData = async () => {
+export const getIncubatorDataById = async (userId) => {
     try {
-      const response = await fetch(`http://eggnest.ccontrolz.com/temperatura/temperaturaActual`, {
+      const response = await fetch(`http://eggnest.ccontrolz.com/incubadora/getbyIdIncubadora?idUser=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -8,7 +8,7 @@ export const getUserData = async () => {
       });
   
       if (!response.ok) {
-        throw new Error('Error al obtener datos.');
+        throw new Error('Error al obtener datos de la incubadora.');
       }
   
       const responseData = await response.json();

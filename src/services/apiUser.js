@@ -1,6 +1,6 @@
 export const loginUser = async (username, password) => {
   try {
-    const response = await fetch('https://vzxn4xkt-4000.use2.devtunnels.ms/user/login ', {
+    const response = await fetch('http://eggnest.ccontrolz.com/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

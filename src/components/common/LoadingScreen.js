@@ -26,7 +26,7 @@ const LoadingScreen = ({ navigation }) => {
         animation="flipInX"
         style={styles.containerLogoTextRespaldo}
       >
-        Calidad y tranquilidad
+        Incubadora con IOT
       </Animatable.Text>
     </View>
   );
