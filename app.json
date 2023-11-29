@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "EGGNEST",
-    "slug": "EGGNEST",
-    "version": "1.0.0",
+    "name": "Eggnest",
+    "slug": "app",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,10 +21,19 @@
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#000000"
-      }
+      },
+      "package": "com.jhairdev.com",
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/images/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ded6551c-eab1-44d2-b45a-253bfcc46dfc"
+      }
     }
   }
 }

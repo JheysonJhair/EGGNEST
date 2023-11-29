@@ -25,7 +25,7 @@ const Login = ({ navigation }) => {
       ]);
       return;
     }
-    if (email.toLowerCase() === "admin" && password === "admin") {
+    if (email.toLowerCase() === "admim" && password === "admim") {
       navigation.navigate("Admin");
       return;
     }

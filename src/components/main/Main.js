@@ -11,6 +11,7 @@ import { getUserData } from "../../services/apiGetTemperaturaHumedad";
 import { updateVentilador } from "../../services/apiControlesVentilador";
 import { updateFoco } from "../../services/apiControlesFoco";
 import { getIncubatorDataById } from "../../services/apiGetIncuvadora";
+import { updateAutomatico } from "../../services/apiControlAutomatico";
 
 const MainScreen = ({ route, navigation }) => {
   const { userData } = route.params;
@@ -25,6 +26,7 @@ const MainScreen = ({ route, navigation }) => {
   const [ventiladorEncendido, setVentiladorEncendido] = useState(false);
   const [actualizarDatos, setActualizarDatos] = useState(true);
   const [error, setError] = useState(null);
+  const [botonHabilitado, setBotonHabilitado] = useState(false);
 
   const fechaInicioObj = new Date(fechaInicio);
   const fechaActualObj = new Date();
@@ -49,8 +51,11 @@ const MainScreen = ({ route, navigation }) => {
         const data = await getIncubatorDataById(userData.user.IdUser);
         const focoEncendido = data.foco === "0";
         const ventiladorEncendido = data.foco === "0";
+        const botonAuto = data.foco === "2" && data.Ventilador1 === "2";
+        setBotonHabilitado(botonAuto);
         setVentiladorEncendido(ventiladorEncendido);
         setFocoEncendido(focoEncendido);
+
       } catch (error) {
         setError(error.message);
       }
@@ -68,7 +73,14 @@ const MainScreen = ({ route, navigation }) => {
   const handleVerDetalles = () => {
     navigation.navigate("Report");
   };
-
+  const handleBotonAutomatico = () => {
+    setBotonHabilitado(true);
+    updateAutomatico(1)
+    .then(() => console.log("Boton automático encendido"))
+    .catch((error) =>
+      console.error("Error boton automatico:", error)
+    );
+  };
 
   const prenderFoco = () => {
     setFocoEncendido(true);
@@ -270,7 +282,14 @@ const MainScreen = ({ route, navigation }) => {
           </View>
         </View>
       </View>
-
+      <TouchableOpacity
+       style={!botonHabilitado ? styles.botonHabilitado : styles.botonDeshabilitado}
+      onPress={handleBotonAutomatico}
+      disabled={botonHabilitado} 
+      
+    >
+      <Text style={styles.buttonText}>Control Automático</Text>
+    </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleVerDetalles}>
         <Text style={styles.buttonText}>Ver detalles</Text>
       </TouchableOpacity>
@@ -300,7 +319,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   headerIcons: {
     flexDirection: "row",
@@ -321,14 +340,14 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   logo: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     resizeMode: "contain",
   },
   infoContainer: {
     flexDirection: "row",
     width: "100%",
-    height: 50,
+    height: 40,
   },
   infoItem: {
     width: "33%",
@@ -393,6 +412,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+  botonHabilitado: {
+    backgroundColor: "#2859AD",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  botonDeshabilitado: {
+    backgroundColor: "gray",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+  },
   buttonText: {
     color: "#fff",
     fontSize: 16,
@@ -401,7 +434,7 @@ const styles = StyleSheet.create({
   ////////////////////////////
   gif: {
     width: "100%",
-    height: 220,
+    height: 195,
   },
   containerGif: {
     flex: 1,
