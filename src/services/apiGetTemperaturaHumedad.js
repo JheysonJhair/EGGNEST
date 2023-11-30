@@ -1,6 +1,6 @@
 export const getUserData = async () => {
     try {
-      const response = await fetch(`http://eggnest.ccontrolz.com/temperatura/temperaturaActual`, {
+      const response = await fetch(`https://vzxn4xkt-4000.use2.devtunnels.ms/temperatura/temperaturaActual`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

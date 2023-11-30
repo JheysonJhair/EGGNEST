@@ -17,10 +17,14 @@ const MainScreen = ({ route, navigation }) => {
   const { userData } = route.params;
   const fechaInicio = userData.Huevos[0].FechaInicio;
   const fechaFormateada = new Date(fechaInicio).toLocaleDateString();
+  const [mostrarMensaje, setMostrarMensaje] = useState(false);
 
   const [temperatura, setTemperatura] = useState(null);
   const [humedad, setHumedad] = useState(null);
-  const [incubadora, setIncubadora] = useState(null);
+
+  const [mostrarNotificacion, setMostrarNotificacion] = useState(
+    diferenciaDias > 0
+  );
 
   const [focoEncendido, setFocoEncendido] = useState(false);
   const [ventiladorEncendido, setVentiladorEncendido] = useState(false);
@@ -34,7 +38,6 @@ const MainScreen = ({ route, navigation }) => {
     (fechaActualObj - fechaInicioObj) / (1000 * 60 * 60 * 24)
   );
 
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -45,7 +48,7 @@ const MainScreen = ({ route, navigation }) => {
         setError(error.message);
       }
     };
-  
+
     const fetchUseIncubadora = async () => {
       try {
         const data = await getIncubatorDataById(userData.user.IdUser);
@@ -55,18 +58,17 @@ const MainScreen = ({ route, navigation }) => {
         setBotonHabilitado(botonAuto);
         setVentiladorEncendido(ventiladorEncendido);
         setFocoEncendido(focoEncendido);
-
       } catch (error) {
         setError(error.message);
       }
     };
-  
+
     const intervalId = setInterval(() => {
       fetchUserData();
       fetchUseIncubadora();
       setActualizarDatos((prev) => !prev);
     }, 10000);
-  
+
     return () => clearInterval(intervalId);
   }, [actualizarDatos, userData.user.IdUser]);
 
@@ -74,12 +76,15 @@ const MainScreen = ({ route, navigation }) => {
     navigation.navigate("Report");
   };
   const handleBotonAutomatico = () => {
-    setBotonHabilitado(true);
     updateAutomatico(1)
-    .then(() => console.log("Boton automático encendido"))
-    .catch((error) =>
-      console.error("Error boton automatico:", error)
-    );
+      .then(() => {
+        console.log("Boton automático encendido");
+        setMostrarMensaje(true);
+        setTimeout(() => {
+          setMostrarMensaje(false);
+        }, 4000);
+      })
+      .catch((error) => console.error("Error boton automatico:", error));
   };
 
   const prenderFoco = () => {
@@ -104,25 +109,44 @@ const MainScreen = ({ route, navigation }) => {
     setVentiladorEncendido(true);
     updateVentilador("0", 1)
       .then(() => console.log("Ventilador encendido actualizado en la API"))
-      .catch((error) => console.error("Error al actualizar ventilador encendido:", error));
+      .catch((error) =>
+        console.error("Error al actualizar ventilador encendido:", error)
+      );
   };
 
   const apagarVentilador = () => {
     setVentiladorEncendido(false);
     updateVentilador("1", 1)
       .then(() => console.log("Ventilador apagado actualizado en la API"))
-      .catch((error) => console.error("Error al actualizar ventilador apagado:", error));
+      .catch((error) =>
+        console.error("Error al actualizar ventilador apagado:", error)
+      );
   };
 
+  const toggleLogin = () => {
+    navigation.navigate("Login");
+  };
+  const handleMostrarNotificacion = () => {
+    if (mostrarNotificacion) {
+      Alert.alert("Alerta", "¡Notificación de diferencia de días!");
+      setMostrarNotificacion(false);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
-          <FontAwesome name="bars" size={21} color="black" />
+        <TouchableOpacity onPress={toggleLogin}>
+          <FontAwesome name="outdent" size={21} color="black" />
         </TouchableOpacity>
         <View style={styles.headerIcons}>
-          <TouchableOpacity>
-            <FontAwesome name="bell" size={21} marginLeft={10} color="black" />
+          <TouchableOpacity onPress={handleMostrarNotificacion}>
+            <FontAwesome
+              name="bell"
+              size={21}
+              marginLeft={10}
+              color={diferenciaDias > 0 ? "red" : "black"}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -140,13 +164,16 @@ const MainScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.infoContainerImage}>
+        {mostrarMensaje && (
+        <Text style={styles.text5}>Botón automático habilitado</Text>
+      )}
           <Text style={styles.text2}>TIPO: {userData.Huevos[0].Tipo}</Text>
           <View style={styles.containerMap}>
             <FontAwesome name="map-marker" size={20} color="#8d4925" />
             <Text style={styles.text4}>Bella vista baja</Text>
           </View>
           <View style={styles.containerMap}>
-            {diferenciaDias >= 1 && diferenciaDias <= 12 && (
+            {diferenciaDias >= 0 && diferenciaDias <= 12 && (
               <>
                 <FontAwesome name="circle" size={13} color="#48c26c" />
                 <Text style={styles.text0}>Tu ave favorita en linea!</Text>
@@ -181,7 +208,7 @@ const MainScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.infoItem2}>
           <Text style={styles.text5}>Fecha fin</Text>
-          {diferenciaDias >= 1 && diferenciaDias <= 7 && (
+          {diferenciaDias >= 0 && diferenciaDias <= 7 && (
             <Text style={styles.text6}>1ra semana</Text>
           )}
           {diferenciaDias >= 8 && diferenciaDias <= 14 && (
@@ -283,13 +310,13 @@ const MainScreen = ({ route, navigation }) => {
         </View>
       </View>
       <TouchableOpacity
-       style={!botonHabilitado ? styles.botonHabilitado : styles.botonDeshabilitado}
-      onPress={handleBotonAutomatico}
-      disabled={botonHabilitado} 
-      
-    >
-      <Text style={styles.buttonText}>Control Automático</Text>
-    </TouchableOpacity>
+        style={
+          styles.botonHabilitado
+        }
+        onPress={handleBotonAutomatico}
+      >
+        <Text style={styles.buttonText}>Control Automático</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleVerDetalles}>
         <Text style={styles.buttonText}>Ver detalles</Text>
       </TouchableOpacity>
@@ -407,21 +434,21 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#F4B415",
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 10,
   },
   botonHabilitado: {
     backgroundColor: "#2859AD",
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 10,
   },
   botonDeshabilitado: {
     backgroundColor: "gray",
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 10,

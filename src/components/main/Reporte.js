@@ -1,26 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { LineChart, BarChart, Grid } from "react-native-svg-charts";
+import { dataTemperatura } from '../../services/apiDataTemperatura'; 
+import { dataHumedad } from '../../services/apiDataHumedad'; 
 
 const ReportScreen = () => {
-  const dataLine = [20, 45, 28, 80, 99];
-  const dataBar = [20, 45, 28, 80, 99, 43];
+  const currentDate = new Date();
+  const [apiData, setApiData] = useState([]);
+  const [apiData2, setApiData2] = useState([]);
+  const [actualizarDatos, setActualizarDatos] = useState(true);
+  const [fechaInicio, setFechaInicio] = useState("");
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+  const getCurrentDate = () => {
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+    return formattedDate;
+  };
+
+  useEffect(() => {
+    setFechaInicio(getCurrentDate());
+    const fetchData = async () => {
+      try {
+        const response = await dataTemperatura(100); 
+        setApiData(response);
+      } catch (error) {
+        console.error('Error al obtener datos de la API:', error.message);
+      }
+    };
+    const fetchData1 = async () => {
+      try {
+        const response = await dataHumedad(100); 
+        setApiData2(response);
+      } catch (error) {
+        console.error('Error al obtener datos de la API:', error.message);
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      fetchData();
+      fetchData1();
+      setActualizarDatos((prev) => !prev);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [actualizarDatos]);
+
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reporte</Text>
 
       <View style={styles.reportContainer}>
-        <Text>Fecha: 25/11/2023</Text>
-        <Text>Hora: 14:30</Text>
-        <Text>Tipo: Reporte Diario</Text>
+        <Text>Fecha: {fechaInicio}</Text>
+        <Text>Hora: {hours}:{minutes}</Text>
       </View>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Gráfico de Líneas</Text>
+        <Text style={styles.chartTitle}>Temperatura: </Text>
+        <Text >Ultima temperatura: {apiData[0]} </Text>
         <LineChart
           style={{ height: 200 }}
-          data={dataLine}
+          data={apiData} 
           svg={{ stroke: "rgb(134, 65, 244)" }}
           contentInset={{ top: 20, bottom: 20 }}
         >
@@ -29,15 +74,16 @@ const ReportScreen = () => {
       </View>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Gráfico de Barras</Text>
-        <BarChart
+        <Text style={styles.chartTitle}>Humedad: </Text>
+        <Text >Ultima temperatura: {apiData2[0]} </Text>
+        <LineChart
           style={{ height: 200 }}
-          data={dataBar}
-          svg={{ fill: "rgb(134, 65, 244)" }}
+          data={apiData2}
+          svg={{ stroke: "rgb(134, 65, 244)" }}
           contentInset={{ top: 20, bottom: 20 }}
         >
           <Grid />
-        </BarChart>
+        </LineChart>
       </View>
     </View>
   );

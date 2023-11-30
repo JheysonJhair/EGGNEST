@@ -1,6 +1,6 @@
-export const getIncubatorDataById = async (userId) => {
+export const dataTemperatura = async (cantidad) => {
     try {
-      const response = await fetch(`https://vzxn4xkt-4000.use2.devtunnels.ms/incubadora/getbyIdIncubadora?idUser=${userId}`, {
+      const response = await fetch(`https://vzxn4xkt-4000.use2.devtunnels.ms/temperatura/reporteTemperatura/${cantidad}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -8,7 +8,7 @@ export const getIncubatorDataById = async (userId) => {
       });
   
       if (!response.ok) {
-        throw new Error('Error al obtener datos de la incubadora.');
+        throw new Error('Error al obtener datos de reporte temperatura.');
       }
   
       const responseData = await response.json();

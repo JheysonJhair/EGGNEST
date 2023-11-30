@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "Eggnest",
-    "slug": "app",
-    "version": "3.0.0",
+    "slug": "Eggnest",
+    "version": "4.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
       },
       "package": "com.jhairdev.com",
       "permissions": [

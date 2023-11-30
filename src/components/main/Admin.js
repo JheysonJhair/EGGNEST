@@ -10,10 +10,16 @@ import {
   Platform,
   CheckBox,
 } from "react-native";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
+import { sendFormDataToApi } from "../../services/apiRegistroUsuario";
+import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const Admin = () => {
+  const navigation = useNavigation();
+
   const [cantidadHuevos, setCantidadHuevos] = useState("");
+  const [cantidadDias, setCantidadDias] = useState("");
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [email, setEmail] = useState("");
@@ -23,13 +29,34 @@ const Admin = () => {
     setFechaInicio(getCurrentDate());
   }, []);
 
-  const handleFormSubmit = () => {
-    if ( cantidadHuevos && usuario && contrasena && email) {
-      console.log("Cantidad de Huevos:", cantidadHuevos);
-      console.log("Usuario:", usuario);
-      console.log("Fecha de Inicio:", fechaInicio);
-      console.log("Contraseña:", contrasena);
-      console.log("Email:", email);
+  const handleFormSubmit = async () => {
+    if (
+      cantidadHuevos &&
+      usuario &&
+      contrasena &&
+      email &&
+      cantidadDias &&
+      fechaInicio
+    ) {
+      try {
+        const formData = {
+          Nombre: usuario,
+          Email: email,
+          Password: contrasena,
+          fechaInicio: fechaInicio,
+          cantidadHuevo: cantidadHuevos,
+          cantidadDias: cantidadDias,
+        };
+
+        const responseData = await sendFormDataToApi(formData);
+        Alert.alert("Registro completo", [{ text: "Aceptar" }]);
+        navigation.navigate('Login')
+      } catch (error) {
+        console.error("Error en la llamada a la API:", error.message);
+        Alert.alert("Error, Vuelva a intentarlo nuevamente", [
+          { text: "Aceptar" },
+        ]);
+      }
     } else {
       alert("Por favor, complete todos los campos y confirme la incubación.");
     }
@@ -67,6 +94,7 @@ const Admin = () => {
           style={styles.input}
           placeholder="Contraseña"
           value={contrasena}
+          autoCapitalize="none"
           secureTextEntry
           onChangeText={(text) => setContrasena(text)}
         />
@@ -87,11 +115,19 @@ const Admin = () => {
           keyboardType="numeric"
           onChangeText={(text) => setCantidadHuevos(text)}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Cantidad de Días"
+          value={cantidadDias}
+          keyboardType="numeric"
+          onChangeText={(text) => setCantidadDias(text)}
+        />
 
         <View style={styles.checkboxContainer}>
           <AntDesign name="checkcircle" size={19} color="#ff9800" />
           <Text style={styles.checkboxText}>
-            Iniciar incubación ahora <Text  style={styles.checkboxText2}>{fechaInicio}</Text>
+            Iniciar incubación ahora{" "}
+            <Text style={styles.checkboxText2}>{fechaInicio}</Text>
           </Text>
         </View>
 
@@ -161,7 +197,7 @@ const styles = StyleSheet.create({
   checkboxText2: {
     color: "#ff9800",
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
 });
 

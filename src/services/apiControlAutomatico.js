@@ -1,7 +1,7 @@
 
       export const updateAutomatico = async (idincubadora) => {
         try {
-          const response = await fetch(`https://eggnest.ccontrolz.com/incubadora/actualizarAutomatico?idincubadora=${idincubadora}`, {
+          const response = await fetch(`https://vzxn4xkt-4000.use2.devtunnels.ms/incubadora/actualizarAutomatico?idincubadora=${idincubadora}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

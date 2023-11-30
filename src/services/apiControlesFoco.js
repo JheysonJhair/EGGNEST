@@ -1,6 +1,6 @@
 export const updateFoco = async (valor, idIncubadora) => {
     try {
-      const response = await fetch('http://eggnest.ccontrolz.com/incubadora/actualizarFoco', {
+      const response = await fetch('https://vzxn4xkt-4000.use2.devtunnels.ms/incubadora/actualizarFoco', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
