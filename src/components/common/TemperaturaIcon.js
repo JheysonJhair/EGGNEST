@@ -26,7 +26,7 @@ const TemperaturaIcon = ({ temperatura }) => {
       ref={viewRef}
       style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 10 }}
     >
-      <FontAwesome name="thermometer" size={40} color={color} />
+      <FontAwesome name="thermometer" size={50} color={color} />
       <Text style={{ color }}>{temperatura}°C</Text>
     </Animatable.View>
   );

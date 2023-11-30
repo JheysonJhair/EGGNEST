@@ -53,16 +53,16 @@ const ReportScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reporte</Text>
+      <Text style={styles.title}>Datos estadísticos</Text>
 
-      <View style={styles.reportContainer}>
-        <Text>Fecha: {fechaInicio}</Text>
-        <Text>Hora: {hours}:{minutes}</Text>
-      </View>
+
+        <Text style={styles.text00}>Fecha: {fechaInicio}</Text>
+        <Text style={styles.text00}>Hora: {hours}:{minutes}</Text>
+
 
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Temperatura: </Text>
-        <Text >Ultima temperatura: {apiData[0]} </Text>
+        <Text >Ultima temperatura: {apiData[99]} </Text>
         <LineChart
           style={{ height: 200 }}
           data={apiData} 
@@ -75,7 +75,7 @@ const ReportScreen = () => {
 
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Humedad: </Text>
-        <Text >Ultima temperatura: {apiData2[0]} </Text>
+        <Text >Ultima humedad: {apiData2[99]} </Text>
         <LineChart
           style={{ height: 200 }}
           data={apiData2}
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     paddingTop:10,
     paddingLeft: 20,
     paddingRight: 20,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -120,6 +121,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+  text00:{
+    fontWeight: "bold",
+    marginBottom: 10
+  }
 });
 
 export default ReportScreen;

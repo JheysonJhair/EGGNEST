@@ -26,7 +26,7 @@ const HumedadIcon = ({ humedad }) => {
       ref={viewRef}
       style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 10 }}
     >
-      <FontAwesome name="tint" size={40} color={color} />
+      <FontAwesome name="tint" size={50} color={color} />
       <Text style={{ color }}>{humedad}%</Text>
     </Animatable.View>
   );

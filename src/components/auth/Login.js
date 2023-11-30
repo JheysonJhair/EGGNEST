@@ -97,7 +97,7 @@ const Login = ({ navigation }) => {
       <View style={styles.signUpContainer}>
         <Text style={styles.signUpText}>¿No tienes una cuenta?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-          <Text style={styles.signUpLink}> Regístrate aquí</Text>
+          <Text style={styles.signUpLink}> Contáctanos</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import TemperaturaIcon from "../common/TemperaturaIcon";
 import HumedadIcon from "../common/HumedadIcon";
@@ -32,6 +32,10 @@ const MainScreen = ({ route, navigation }) => {
   const [error, setError] = useState(null);
   const [botonHabilitado, setBotonHabilitado] = useState(false);
 
+  const windowDimensions = useWindowDimensions();
+  const isTablet = windowDimensions.width >= 600 && windowDimensions.height >= 600;
+  const gifHeight = isTablet ? 400 : 180;
+
   const fechaInicioObj = new Date(fechaInicio);
   const fechaActualObj = new Date();
   const diferenciaDias = Math.floor(
@@ -52,6 +56,7 @@ const MainScreen = ({ route, navigation }) => {
     const fetchUseIncubadora = async () => {
       try {
         const data = await getIncubatorDataById(userData.user.IdUser);
+        console.log(focoEncendido)
         const focoEncendido = data.foco === "0";
         const ventiladorEncendido = data.foco === "0";
         const botonAuto = data.foco === "2" && data.Ventilador1 === "2";
@@ -80,14 +85,12 @@ const MainScreen = ({ route, navigation }) => {
       .then(() => {
         console.log("Boton automático encendido");
         setMostrarMensaje(true);
-        setTimeout(() => {
-          setMostrarMensaje(false);
-        }, 4000);
       })
       .catch((error) => console.error("Error boton automatico:", error));
   };
 
   const prenderFoco = () => {
+    setMostrarMensaje(false);
     setFocoEncendido(true);
     updateFoco("0", 1)
       .then(() => console.log("Foco encendido actualizado en la API"))
@@ -97,6 +100,7 @@ const MainScreen = ({ route, navigation }) => {
   };
 
   const apagarFoco = () => {
+    setMostrarMensaje(false);
     setFocoEncendido(false);
     updateFoco("1", 1)
       .then(() => console.log("Foco apagado actualizado en la API"))
@@ -106,6 +110,7 @@ const MainScreen = ({ route, navigation }) => {
   };
 
   const encenderVentilador = () => {
+    setMostrarMensaje(false);
     setVentiladorEncendido(true);
     updateVentilador("0", 1)
       .then(() => console.log("Ventilador encendido actualizado en la API"))
@@ -115,6 +120,7 @@ const MainScreen = ({ route, navigation }) => {
   };
 
   const apagarVentilador = () => {
+    setMostrarMensaje(false);
     setVentiladorEncendido(false);
     updateVentilador("1", 1)
       .then(() => console.log("Ventilador apagado actualizado en la API"))
@@ -145,7 +151,7 @@ const MainScreen = ({ route, navigation }) => {
               name="bell"
               size={21}
               marginLeft={10}
-              color={diferenciaDias > 0 ? "red" : "black"}
+              color={diferenciaDias > 19 ? "red" : "black"}
             />
           </TouchableOpacity>
         </View>
@@ -165,7 +171,7 @@ const MainScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.infoContainerImage}>
         {mostrarMensaje && (
-        <Text style={styles.text5}>Botón automático habilitado</Text>
+        <Text style={styles.text00}>Botón automático habilitado</Text>
       )}
           <Text style={styles.text2}>TIPO: {userData.Huevos[0].Tipo}</Text>
           <View style={styles.containerMap}>
@@ -243,7 +249,7 @@ const MainScreen = ({ route, navigation }) => {
             >
               <MaterialCommunityIcons
                 name="fan"
-                size={52}
+                size={65}
                 color={ventiladorEncendido ? "#2859ad" : "#565557"}
               />
             </Animatable.View>
@@ -256,7 +262,7 @@ const MainScreen = ({ route, navigation }) => {
                 <FontAwesome
                   name="power-off"
                   size={26}
-                  marginRight={3}
+                  marginRight={5}
                   color={ventiladorEncendido ? "#009846" : "#565557"}
                 />
               </TouchableOpacity>
@@ -268,7 +274,7 @@ const MainScreen = ({ route, navigation }) => {
                 <FontAwesome
                   name="power-off"
                   size={26}
-                  marginLeft={3}
+                  marginLeft={5}
                   color={!ventiladorEncendido ? "#DB4437" : "#565557"}
                 />
               </TouchableOpacity>
@@ -282,7 +288,7 @@ const MainScreen = ({ route, navigation }) => {
             >
               <FontAwesome
                 name="lightbulb-o"
-                size={52}
+                size={65}
                 color={focoEncendido ? "#f4b415" : "#565557"}
               />
             </Animatable.View>
@@ -292,7 +298,7 @@ const MainScreen = ({ route, navigation }) => {
                 <FontAwesome
                   name="power-off"
                   size={26}
-                  marginRight={3}
+                  marginRight={5}
                   color={focoEncendido ? "#009846" : "#565557"}
                 />
               </TouchableOpacity>
@@ -301,7 +307,7 @@ const MainScreen = ({ route, navigation }) => {
                 <FontAwesome
                   name="power-off"
                   size={26}
-                  marginLeft={3}
+                  marginLeft={5}
                   color={!focoEncendido ? "#DB4437" : "#565557"}
                 />
               </TouchableOpacity>
@@ -322,16 +328,16 @@ const MainScreen = ({ route, navigation }) => {
       </TouchableOpacity>
       <Text style={styles.text1}>Proceso de incubación</Text>
       <View style={styles.containerGif}>
-        <View style={styles.outerContainer}>
-          <View style={[styles.centerChild, { width: "70%" }]}>
-            <Image
-              source={{
-                uri: "https://media0.giphy.com/media/Y1Vq94Ivx0EtG/giphy.gif?cid=ecf05e47xcg4psz6jijexl0cyoucgcnwzdtwxbu1mhsrwg9g&ep=v1_gifs_search&rid=giphy.gif&ct=g",
-              }}
-              style={styles.gif}
-            />
-          </View>
+      <View style={styles.outerContainer}>
+        <View style={[styles.centerChild, { width: "70%" }]}>
+          <Image
+            source={{
+              uri: "https://media0.giphy.com/media/Y1Vq94Ivx0EtG/giphy.gif?cid=ecf05e47xcg4psz6jijexl0cyoucgcnwzdtwxbu1mhsrwg9g&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+            }}
+            style={[styles.gif, { height: gifHeight }]}
+          />
         </View>
+      </View>
       </View>
     </View>
   );
@@ -342,6 +348,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f0",
+    paddingBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -417,6 +424,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#565557",
   },
+  text00: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#48C26C",
+  },
   text0: {
     fontSize: 14,
     fontWeight: "bold",
@@ -459,14 +471,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   ////////////////////////////
-  gif: {
-    width: "100%",
-    height: 195,
-  },
   containerGif: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    resizeMode: 'cover',
+  },
+  gif: {
+    width: "100%",
+    height: 180,
+    resizeMode: 'cover',
   },
   outerContainer: {
     flexDirection: "row",

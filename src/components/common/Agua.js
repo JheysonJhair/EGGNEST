@@ -28,7 +28,7 @@ const AguaIcon = ({ velocidad }) => {
       ref={viewRef}
       style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 10 }}
     >
-      <MaterialCommunityIcons name="barrel" size={40} color={color} />
+      <MaterialCommunityIcons name="barrel" size={50} color={color} />
       <Text style={{ color }}>{velocidad}</Text>
     </Animatable.View>
   );
